@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Button } from 'antd';
+import { Typography, Button, Card } from 'antd';
 
 const { Title } = Typography;
 
 function Stopwatch() {
-  const [elapsedTime, setElapsedTime] = useState(0); // Elapsed time in seconds
+  const [elapsedTime, setElapsedTime] = useState(0); // Elapsed time in milliseconds
   const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
@@ -12,8 +12,8 @@ function Stopwatch() {
 
     if (isActive) {
       intervalId = setInterval(() => {
-        setElapsedTime((prevTime) => prevTime + 1);
-      }, 1000);
+        setElapsedTime((prevTime) => prevTime + 10); // Update every 10 milliseconds
+      }, 10);
     }
 
     return () => clearInterval(intervalId);
@@ -32,15 +32,35 @@ function Stopwatch() {
     setElapsedTime(0);
   };
 
+  // Function to format milliseconds into "00:00:00:00" format
+  const formatTime = (milliseconds) => {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const formattedMilliseconds = (milliseconds % 1000).toString().padStart(3, '0');
+
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${formattedMilliseconds}`;
+  };
+
   return (
-    <div>
-      <Title level={2}>{elapsedTime} seconds</Title>
+    <Card
+      title="Stopwatch"
+      bordered={true}
+      style={{
+        width: 450,
+        height: 250,
+        textAlign: 'center',
+        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', // Add a shadow
+      }}
+    >
+      <Title level={2}>{formatTime(elapsedTime)}</Title>
       <Button onClick={startStopwatch} disabled={isActive}>
         Start
       </Button>
       <Button onClick={stopStopwatch}>Stop</Button>
       <Button onClick={resetStopwatch}>Reset</Button>
-    </div>
+    </Card>
   );
 }
 

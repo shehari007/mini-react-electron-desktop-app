@@ -17,14 +17,14 @@ function App() {
           onSelect={(e) => handleMenuChange(e.key)}>
           <Menu.Item key="1">Home</Menu.Item>
           <Menu.Item key="2">Calculator</Menu.Item>
-          <Menu.Item key="3">To Do List</Menu.Item>
+          <Menu.Item key="3">Todo List</Menu.Item>
           <Menu.Item key="4">Clock</Menu.Item>
           <Menu.Item key="5">Weather App</Menu.Item>
           <Menu.Item key="6">About App</Menu.Item>
 
         </Menu>
       </Header>
-      <Content style={{ padding: '0 50px', marginTop: 64 }}>
+      <Content style={{ padding: '0 50px', marginTop: 80 }}>
        
           {menuKey === '2' ?
           <><Calculator /></> 

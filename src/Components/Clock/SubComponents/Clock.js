@@ -16,20 +16,21 @@ function Clock() {
 
   return (
     <Card
-            
-           bordered={true}
-            style={{
-                width: 550,
-                textAlign: 'center',
-                margin: '0 auto',
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', // Add a shadow
-            }}
-        >
-    <Title level={2}>
-      {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}<br/>
-     
-    </Title>
-    {time.toLocaleDateString()}
+      title="Clock"
+      bordered={true}
+      style={{
+        width: 450,
+
+        textAlign: 'center',
+        margin: '0 auto',
+        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', // Add a shadow
+      }}
+    >
+      <Title style={{marginTop:'-8px'}}  level={2}>
+        {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}<br />
+
+      </Title>
+      {time.toLocaleDateString()}
     </Card>
   );
 }
