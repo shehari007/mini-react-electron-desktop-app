@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card, Collapse } from 'antd';
-import { HomeOutlined, CalculatorOutlined, OrderedListOutlined, ClockCircleOutlined, AimOutlined } from '@ant-design/icons';
+import { CalculatorOutlined, OrderedListOutlined, ClockCircleOutlined, AimOutlined } from '@ant-design/icons';
 const HomePage = () => {
     const items = [
         {
@@ -37,6 +37,7 @@ const HomePage = () => {
                 }}
             >
                 <img src='logo.png' height={150} width={210} alt='logo' />
+                <p><b>Mini 4 in 1 Electro App</b></p>
             </Card>
             <div style={{ marginTop: '35px' }}>
                 <Card

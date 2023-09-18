@@ -4,6 +4,7 @@ import './App.css';
 import { HomeOutlined, CalculatorOutlined, OrderedListOutlined, ClockCircleOutlined, AimOutlined, HeartOutlined } from '@ant-design/icons';
 import { Calculator, ToDoList, MainClock, Weather } from './Components';
 import HomePage from './Components/Home/HomePage';
+import About from './Components/About/About';
 const { Header, Content } = Layout;
 const { ipcRenderer } = window.require('electron');
 
@@ -57,6 +58,9 @@ function App() {
                   :
                   menuKey === '5' ?
                     <><Weather /></>
+                    :
+                    menuKey === '6' ?
+                    <><About/></>
                     :
                     null}
 
