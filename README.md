@@ -1,70 +1,126 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+<div align="center">
+  <a href="https://choosealicense.com/licenses/mit/">
+    <img src="https://img.shields.io/badge/LICENSE-MIT-blue?style=flat-square" alt="MIT License">
+  </a>
+  
+  <img src="https://img.shields.io/badge/BUILD-PASSING-green?style=flat-square" alt="Build Passing">
+</div>
 
-In the project directory, you can run:
+<br/>
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+<div align="center">
+    <img src="https://github.com/shehari007/mini-react-electron-desktop-app/blob/main/public/logo.png?raw=true" height="250px" width="320px">
+</div>
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+# MINI 4 in 1 REACT ELECTRON APP FOR DESKTOP
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+A clean & elegant design using Ant Design components, a sleek 4 in 1 mini react app based on electron framework. This app include Calculator, Todo List, Clock, Weather App in single distribution.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Tech Stack
 
-### `npm run eject`
+**CLIENT:** React, Hooks, Ant Design 5+, Electron, Node
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+**OPEN API:** Weather App Details from -> (https://openweathermap.org/api)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Features
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- Clean Modern design language
+- Calculator with keyboard input to perform operations
+- Persistent Storage of Todo List so user can save progress on closing app.
+- Countdown Timer Alert
+- Simple Elegant StopWatch
+- Weather App Settings are persistent and have option to save API-KEY and Default city to save Locally
+- Can be build for Windows, Linux, MacOS and also deoplyable as a website.
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Pre Requirements For Local Development
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- React 18+
+- Node, NPM
+- Python with pip
+- API-KEY from (https://openweathermap.org/api) for weather component to work
+- VSCODE With ES6+ Module
+## Installation
 
-### Code Splitting
+Clone the project
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```bash
+  git clone https://github.com/shehari007/mini-react-electron-desktop-app.git
+```
 
-### Analyzing the Bundle Size
+Go to the project directory
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```bash
+cd mini-react-electron-desktop-app
+```
 
-### Making a Progressive Web App
+Install dependencies
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```bash
+npm install
+```
 
-### Advanced Configuration
+Start the Electron Project in Windows
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```bash
+npm run electron:start
+```
+Project will open in window mode not in browser as normal react app would, Happy Hacking!
+## Deployment
 
-### Deployment
+Deployment is never been easy before, package.json is already configured for every platform (Window, Linux, MacOs, Web). Just need to run build commands for each platform as follows:
+## For Windows
+```bash
+npm run electron:package:win
+```
+## For Linux
+```bash
+npm run electron:package:linux
+```
+## For MacOS
+```bash
+npm run electron:package:mac
+```
+## For Website
+```bash
+npm run build
+```
+Running these commands will give you a package file (Windows->NSIS .exe) || (Linux->.deb) || (macOS->.dmg) || for wesbite you will get the build folder where you can serve the wesbite using:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```bash
+npm install -g serve
+serve -s build
+```
+## Demo Website Link
 
-### `npm run build` fails to minify
+_in progress..._
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Demo Windows Setup
+
+Latest release is available for desktop users to test and use the electron application, check out the latest release section and download the application for Windows x64
+
+
+## !!IMPORTANT NOTE!!
+
+- For this specific app NODE core components enabled & contextIsolation are disabled which is not recommended due to security concerns. However there is no problem with this app as its not used for web browsing.
+
+- If you enable the preload.js and disabled the node core components the persistent storage wont work.
+
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
+
+
+## Feedback
+
+If you have any feedback, please reach out at shehariyar@gmail.com
+dont't forget to give us a star if you like this project.
