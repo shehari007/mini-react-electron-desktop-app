@@ -23,7 +23,7 @@ function Clock() {
 
         textAlign: 'center',
         margin: '0 auto',
-        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', // Add a shadow
+        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', 
       }}
     >
       <Title style={{marginTop:'-8px'}}  level={2}>

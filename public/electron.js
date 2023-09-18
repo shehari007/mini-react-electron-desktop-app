@@ -1,12 +1,19 @@
 // Module to control the application lifecycle and the native browser window.
-const { app, BrowserWindow, protocol } = require("electron");
+const { app, BrowserWindow, protocol, ipcMain, shell } = require("electron");
 const path = require("path");
 const url = require("url");
+
+let splash
 // Create the native browser window.
 function createWindow() {
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1280,
+    height: 720,
+    frame: false, // Disable the default window frame
+    fullscreen: true, // Start the app in full-screen mode
+    resizable: false,
+    show: false, // don't show the main window
+
     // Set the path of an additional "preload" script that can be used to
     // communicate between node-land and browser-land.
     webPreferences: {
@@ -15,25 +22,54 @@ function createWindow() {
       contextIsolation: false
     },
   });
- 
+
+  mainWindow.setIcon(path.join(__dirname, 'logo.png'));
+
+  splash = new BrowserWindow({ width: 810, height: 610, transparent: true, frame: false, alwaysOnTop: true });
+  splash.loadURL(`file://${__dirname}/splash.html`);
   // In production, set the initial browser path to the local bundle generated
   // by the Create React App build process.
   // In development, set it to localhost to allow live/hot-reloading.
   const appURL = app.isPackaged
     ? url.format({
-        pathname: path.join(__dirname, "index.html"),
-        protocol: "file:",
-        slashes: true,
-      })
+      pathname: path.join(__dirname, "index.html"),
+      protocol: "file:",
+      slashes: true,
+    })
     : "http://localhost:3000";
   mainWindow.loadURL(appURL);
- 
+
+  mainWindow.once('ready-to-show', () => {
+    splash.destroy();
+    mainWindow.show();
+    // Listen for IPC message from the renderer process
+    // Handle window minimize
+    ipcMain.on('minimize', () => {
+      mainWindow.minimize();
+    });
+
+    // Handle window close
+    ipcMain.on('close', () => {
+      mainWindow.close();
+    });
+
+    ipcMain.on('enter-fullscreen', () => {
+      mainWindow.maximize();
+    });
+
+    ipcMain.on('restore-fullscreen', () => {
+      mainWindow.unmaximize();
+    });
+
+
+  });
   // Automatically open Chrome's DevTools in development mode.
   if (!app.isPackaged) {
     mainWindow.webContents.openDevTools();
+
   }
 }
- 
+
 // Setup a local proxy to adjust the paths of requested files when loading
 // them from the local production bundle (e.g.: local fonts, etc...).
 function setupLocalFilesNormalizerProxy() {
@@ -48,14 +84,19 @@ function setupLocalFilesNormalizerProxy() {
     },
   );
 }
- 
+
 // This method will be called when Electron has finished its initialization and
 // is ready to create the browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow();
+
+  ipcMain.on('open-external-link', (event, url) => {
+    // Open the URL in the default web browser
+    shell.openExternal(url);
+  });
   setupLocalFilesNormalizerProxy();
- 
+
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
@@ -64,7 +105,7 @@ app.whenReady().then(() => {
     }
   });
 });
- 
+
 // Quit when all windows are closed, except on macOS.
 // There, it's common for applications and their menu bar to stay active until
 // the user quits  explicitly with Cmd + Q.
@@ -73,7 +114,7 @@ app.on("window-all-closed", function () {
     app.quit();
   }
 });
- 
+
 // If your app has no need to navigate or only needs to navigate to known pages,
 // it is a good idea to limit navigation outright to that known scope,
 // disallowing any other kinds of navigation.
@@ -81,12 +122,12 @@ const allowedNavigationDestinations = "https://my-electron-app.com";
 app.on("web-contents-created", (event, contents) => {
   contents.on("will-navigate", (event, navigationUrl) => {
     const parsedUrl = new URL(navigationUrl);
- 
+
     if (!allowedNavigationDestinations.includes(parsedUrl.origin)) {
       event.preventDefault();
     }
   });
 });
- 
+
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.

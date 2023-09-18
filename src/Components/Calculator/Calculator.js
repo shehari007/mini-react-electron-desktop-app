@@ -72,6 +72,7 @@ function Calculator() {
                     onKeyDown={handleKeyPress}
                     readOnly
                     autoFocus
+                    id="calculatorInput"
                     className="input-field"
                 />
                 <Row gutter={8}>

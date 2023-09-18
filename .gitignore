@@ -8,6 +8,7 @@
 # testing
 /coverage
 todos.json
+weather.json
 # production
 /build
 dist

@@ -51,7 +51,7 @@ function Stopwatch() {
         width: 450,
         height: 250,
         textAlign: 'center',
-        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', // Add a shadow
+        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
       }}
     >
       <Title level={2}>{formatTime(elapsedTime)}</Title>

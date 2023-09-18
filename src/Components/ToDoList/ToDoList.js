@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { List, Input, Button, Card } from 'antd';
 const fs = window.require('fs');
-function ToDoList() {
 
+function ToDoList() {
+   
     const [tasks, setTasks] = useState([]);
     const [task, setTask] = useState('');
 
 
     useEffect(() => {
-        // Load tasks from a JSON file when the component mounts
+
         try {
             const data = fs.readFileSync('todos.json', 'utf-8');
             const parsedData = JSON.parse(data);
@@ -33,21 +34,21 @@ function ToDoList() {
         setTasks(newTasks);
         setTask('');
 
-        writeDataToFile(newTasks); // Save the updated data
+        writeDataToFile(newTasks);
     };
-const clearAll = () => {
-    const newTasks = [];
-    
-    setTasks(newTasks);
+    const clearAll = () => {
+        const newTasks = [];
 
-    writeDataToFile(newTasks); 
-}
+        setTasks(newTasks);
+
+        writeDataToFile(newTasks);
+    }
     const removeTask = (index) => {
         const newTasks = [...tasks];
         newTasks.splice(index, 1);
         setTasks(newTasks);
 
-        writeDataToFile(newTasks); // Save the updated data
+        writeDataToFile(newTasks);
     };
 
     return (
@@ -57,13 +58,14 @@ const clearAll = () => {
             style={{
                 width: 550,
                 margin: '0 auto',
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', // Add a shadow
+                boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
             }}
         >
             <div className="todo-app">
 
                 <div className="input-container">
                     <Input
+                        id="calculatorInput"
                         placeholder="Enter a task"
                         value={task}
                         onChange={(e) => setTask(e.target.value)}
@@ -73,7 +75,7 @@ const clearAll = () => {
                 <Button type="primary" onClick={addTask}>
                     Add Task
                 </Button>
-                <Button type="primary" style={{marginLeft:'5px'}} onClick={clearAll}>
+                <Button type="primary" style={{ marginLeft: '5px' }} onClick={clearAll}>
                     Clear all
                 </Button>
                 <List
@@ -85,12 +87,12 @@ const clearAll = () => {
                     renderItem={(item, index) => (
                         <List.Item
                             actions={[
-                                <Button type="primary" style={{marginTop: '-5px'}} danger onClick={() => removeTask(index)}>
+                                <Button type="primary" style={{ marginTop: '-5px' }} danger onClick={() => removeTask(index)}>
                                     Delete
                                 </Button>
                             ]}
                         >
-                           {index+1}. {item}
+                            {index + 1}. {item}
                         </List.Item>
                     )}
                 />
