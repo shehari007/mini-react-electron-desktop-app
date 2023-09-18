@@ -1,9 +1,9 @@
 {
-  "name": "basic-4-in-1-react-apps",
+  "name": "basic-4-in-1-react-app",
   "version": "0.1.5",
   "private": true,
-  "author": "Muhammad Sheharyar Butt",
-  "description": "My fantastic Electron app",
+  "author": "Muhammad Sheharyar Butt <shehariyar@gmail.com> (https://github.com/shehari007)",
+  "description": "4 in 1 React App Based on Electron Framework",
   "homepage": "./",
   "main": "./public/electron.js",
   "dependencies": {
@@ -36,8 +36,8 @@
     "electron:package:linux": "npm run build && electron-builder -l -c.extraMetadata.main=build/electron.js"
   },
   "build": {
-    "appId": "com.electron.ReactWidgets",
-    "productName": "React Widgets & Apps",
+    "appId": "com.electron.reactapp",
+    "productName": "Mini Electron App",
     "files": [
       "build/**/*",
       "node_modules/**/*"
@@ -51,6 +51,11 @@
     "win": {
       "target": "nsis",
       "icon": "public/logo.png"
+      
+    },
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false
     },
     "linux": {
       "target": "deb",

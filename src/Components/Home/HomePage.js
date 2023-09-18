@@ -37,7 +37,7 @@ const HomePage = () => {
                 }}
             >
                 <img src='logo.png' height={150} width={210} alt='logo' />
-                <p><b>Mini 4 in 1 Electro App</b></p>
+                <p><b>Mini 4 in 1 Electron App</b></p>
             </Card>
             <div style={{ marginTop: '35px' }}>
                 <Card
