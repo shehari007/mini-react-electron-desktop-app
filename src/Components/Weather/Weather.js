@@ -91,7 +91,7 @@ const Weather = () => {
     const data = fs.readFileSync('weather.json', 'utf-8');
     var fileCityname = JSON.parse(data).cityname;
     if (city) {
-      fetch(`http://api.openweathermap.org/data/2.5/weather?q=${SearchCity !== '' ? SearchCity : !fileCityname ? city : fileCityname}&APPID=${JSON.parse(data).apiKey}`)
+      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${SearchCity !== '' ? SearchCity : !fileCityname ? city : fileCityname}&APPID=${JSON.parse(data).apiKey}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -134,7 +134,7 @@ const Weather = () => {
 
   const getWeatherIconUrl = (iconCode) => {
     const iconType = iconCode.endsWith('n') ? iconCode.replace('n', 'd') : iconCode;
-    return `http://openweathermap.org/img/wn/${iconType}.png`;
+    return `https://openweathermap.org/img/wn/${iconType}.png`;
   };
 
   return (
