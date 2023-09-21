@@ -101,7 +101,8 @@ serve -s build
 ```
 ## Demo Website Link
 
-_in progress..._
+(https://electron4in1-web-preview.vercel.app/)
+_This is just a preview of app, data will not save and lost if tab is closed or menu is changed!_
 
 ## Demo Windows Setup
 
