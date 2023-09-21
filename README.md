@@ -110,7 +110,7 @@ Latest release is available for desktop users to test and use the electron appli
 
 ## !!IMPORTANT NOTE!!
 
-- For this specific app NODE core components enabled & contextIsolation are disabled which is not recommended due to security concerns. However there is no problem with this app as its not used for web browsing.
+- For this specific app NODE core components enabled & contextIsolation are disabled which is not recommended due to security concerns. However there is no problem with this app as its not used for web browsing and also "CSP inline-scripts" policy is enabled so user can use it with confidence.
 
 - If you enable the preload.js and disabled the node core components the persistent storage wont work.
 
