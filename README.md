@@ -40,6 +40,27 @@ A clean & elegant design using Ant Design components, a sleek 4 in 1 mini react 
 - Weather App Settings are persistent and have option to save API-KEY and Default city to save Locally
 - Can be build for Windows, Linux, MacOS and also deoplyable as a website.
 
+## Screenshots
+
+<details>
+  <summary>See SS here.</summary>
+  <div align="center">
+  <h4>Home Page View</h4>
+  <img src="https://github.com/shehari007/mini-react-electron-desktop-app/blob/main/screenshots/miniapp%20(1).png?raw=true" name="image-1">
+  <h4>Calculator View</h4>
+  <img src="https://github.com/shehari007/mini-react-electron-desktop-app/blob/main/screenshots/miniapp%20(2).png?raw=true" name="image-2">
+  <h4>Todo List View</h4>
+  <img src="https://github.com/shehari007/mini-react-electron-desktop-app/blob/main/screenshots/miniapp%20(3).png?raw=true" name="image-3">
+  <h4>Clock App View</h4>
+  <img src="https://github.com/shehari007/mini-react-electron-desktop-app/blob/main/screenshots/miniapp%20(4).png?raw=true" name="image-4">
+    <h4>Weather App View</h4>
+  <img src="https://github.com/shehari007/mini-react-electron-desktop-app/blob/main/screenshots/miniapp%20(5).png?raw=true" name="image-5">
+    <h4>Weather Search View</h4>
+  <img src="https://github.com/shehari007/mini-react-electron-desktop-app/blob/main/screenshots/miniapp%20(6).png?raw=true" name="image-6">
+      <h4>About View</h4>
+  <img src="https://github.com/shehari007/mini-react-electron-desktop-app/blob/main/screenshots/miniapp%20(7).png?raw=true" name="image-7">
+  </div>
+</details>
 
 ## Pre Requirements For Local Development
 
