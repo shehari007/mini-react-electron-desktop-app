@@ -146,3 +146,6 @@ Latest release is available for desktop users to test and use the electron appli
 
 If you have any feedback, please reach out at shehariyar@gmail.com
 dont't forget to give us a star if you like this project.
+
+## Liked my dedication? Buy me a coffee?
+<a href="https://www.buymeacoffee.com/shehari007">☕ Buy Me A Coffee</a>
