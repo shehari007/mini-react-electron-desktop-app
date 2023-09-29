@@ -11,7 +11,7 @@ function Calculator() {
         console.log(value)
         if (value === 'Escape') {
             setResult('');
-            setInput('');
+            setInput('0');
         } else if (value !== 'pow') {
             setInput((prevInput) => prevInput === '0' ? value : prevInput + value);
         } else if (value === 'pow') {
@@ -97,6 +97,7 @@ function Calculator() {
                             <Button onClick={() => handleButtonClick('^')}>x<sup>y</sup></Button>
                             <Button onClick={() => handleButtonClick('pow')}>x<sup>2</sup></Button>
                             <Button onClick={calculateResult} >=</Button>
+                            <Button onClick={() => handleButtonClick('Escape')} type='primary' >C</Button>
                         </div>
                     </Col>
                     {/* <Col style={{marginLeft: '25px'}} span={6}>
