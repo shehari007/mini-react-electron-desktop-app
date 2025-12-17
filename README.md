@@ -17,7 +17,7 @@
 
 AppBox is a modern, responsive utility suite built with **React**, **Ant Design**, and **Electron**. It bundles multiple everyday tools into a single app that runs as a desktop application (Windows/macOS/Linux) and can also be deployed as a web build.
 
-Demo (web preview): https://electron4in1-web-preview.vercel.app/
+Demo (web preview): https://appbox.msyb.dev/
 
 ## Highlights
 
