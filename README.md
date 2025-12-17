@@ -1,151 +1,198 @@
-
-
 <div align="center">
   <a href="https://choosealicense.com/licenses/mit/">
-    <img src="https://img.shields.io/badge/LICENSE-MIT-blue?style=flat-square" alt="MIT License">
+    <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="MIT License" />
   </a>
-  
-  <img src="https://img.shields.io/badge/BUILD-PASSING-green?style=flat-square" alt="Build Passing">
+  <a href="https://github.com/shehari007/mini-react-electron-desktop-app">
+    <img src="https://img.shields.io/badge/App-AppBox-6366f1?style=flat-square" alt="AppBox" />
+  </a>
 </div>
 
-<br/>
-
+<br />
 
 <div align="center">
-    <img src="https://github.com/shehari007/mini-react-electron-desktop-app/blob/main/public/logo.png?raw=true" height="250px" width="320px">
+  <img src="public/logo.png" alt="AppBox" height="220" />
 </div>
 
+# AppBox — All‑in‑One Utility Toolbox (React + Electron)
 
+AppBox is a modern, responsive utility suite built with **React**, **Ant Design**, and **Electron**. It bundles multiple everyday tools into a single app that runs as a desktop application (Windows/macOS/Linux) and can also be deployed as a web build.
 
+Demo (web preview): https://electron4in1-web-preview.vercel.app/
 
-# MINI 4 in 1 REACT ELECTRON APP FOR DESKTOP
+## Highlights
 
-A clean & elegant design using Ant Design components, a sleek 4 in 1 mini react app based on electron framework. This app include Calculator, Todo List, Clock, Weather App in single distribution.
-
-
-## Tech Stack
-
-**CLIENT:** React, Hooks, Ant Design 5+, Electron, Node
-
-**OPEN API:** Weather App Details from -> (https://openweathermap.org/api)
-
+- **Full-width, responsive UI** across pages and components
+- **Local persistence** via `localStorage` (todos, calculator history, weather settings, world clock cities)
+- **Keyboard-friendly calculator** (Enter to evaluate, Esc to clear)
+- **Cross‑platform packaging** via `electron-builder` (Windows NSIS, macOS DMG, Linux DEB)
 
 ## Features
 
-- Clean Modern design language
-- Calculator with keyboard input to perform operations
-- Persistent Storage of Todo List so user can save progress on closing app.
-- Countdown Timer Alert
-- Simple Elegant StopWatch
-- Weather App Settings are persistent and have option to save API-KEY and Default city to save Locally
-- Can be build for Windows, Linux, MacOS and also deoplyable as a website.
+- **Calculator**
+  - Basic + Scientific modes
+  - History panel (last entries)
+  - Keyboard input support
+
+- **Converters**
+  - Multiple categories (length, weight, temperature, speed, time, storage, area, volume)
+  - Swap units and instant conversion
+
+- **Todo List**
+  - Add, complete, delete
+  - Filters: all / active / completed
+  - Clear done / clear all
+  - Persists your tasks locally
+
+- **Clock & Timer**
+  - Digital clock
+  - Countdown timer
+  - Stopwatch
+
+- **World Clock**
+  - Add/remove cities
+  - Local time + multi‑timezone overview
+  - Persists selected cities locally
+
+- **Weather**
+  - City search + detailed weather panel
+  - Persisted settings (API key + default city)
 
 ## Screenshots
 
 <details>
-  <summary>See SS here.</summary>
+  <summary>Open screenshots</summary>
   <div align="center">
-  <h4>Home Page View</h4>
-  <img src="https://github.com/shehari007/mini-react-electron-desktop-app/blob/main/screenshots/miniapp%20(1).png?raw=true" name="image-1">
-  <h4>Calculator View</h4>
-  <img src="https://github.com/shehari007/mini-react-electron-desktop-app/blob/main/screenshots/miniapp%20(2).png?raw=true" name="image-2">
-  <h4>Todo List View</h4>
-  <img src="https://github.com/shehari007/mini-react-electron-desktop-app/blob/main/screenshots/miniapp%20(3).png?raw=true" name="image-3">
-  <h4>Clock App View</h4>
-  <img src="https://github.com/shehari007/mini-react-electron-desktop-app/blob/main/screenshots/miniapp%20(4).png?raw=true" name="image-4">
-    <h4>Weather App View</h4>
-  <img src="https://github.com/shehari007/mini-react-electron-desktop-app/blob/main/screenshots/miniapp%20(5).png?raw=true" name="image-5">
-    <h4>Weather Search View</h4>
-  <img src="https://github.com/shehari007/mini-react-electron-desktop-app/blob/main/screenshots/miniapp%20(6).png?raw=true" name="image-6">
-      <h4>About View</h4>
-  <img src="https://github.com/shehari007/mini-react-electron-desktop-app/blob/main/screenshots/miniapp%20(7).png?raw=true" name="image-7">
+    <h4>Home</h4>
+    <img src="screenshots/miniapp%20(1).png" alt="Home" />
+
+    <h4>Calculator</h4>
+    <img src="screenshots/miniapp%20(2).png" alt="Calculator" />
+
+    <h4>Todo List</h4>
+    <img src="screenshots/miniapp%20(3).png" alt="Todo List" />
+
+    <h4>Clock & Timer</h4>
+    <img src="screenshots/miniapp%20(4).png" alt="Clock & Timer" />
+
+    <h4>Weather</h4>
+    <img src="screenshots/miniapp%20(5).png" alt="Weather" />
+
+    <h4>Weather Search</h4>
+    <img src="screenshots/miniapp%20(6).png" alt="Weather Search" />
+
+    <h4>About</h4>
+    <img src="screenshots/miniapp%20(7).png" alt="About" />
   </div>
 </details>
 
-## Pre Requirements For Local Development
+## Tech Stack
 
-- React 18+
-- Node, NPM
-- Python with pip
-- API-KEY from (https://openweathermap.org/api) for weather component to work
-- VSCODE With ES6+ Module
-## Installation
+- **UI:** React 19, Ant Design 6, @ant-design/icons
+- **Desktop:** Electron
+- **Math:** mathjs
+- **Build tooling:** react-scripts, electron-builder
+- **Performance metrics:** web-vitals
 
-Clone the project
+## Requirements
+
+- Node.js (LTS recommended)
+- npm
+- (Optional) OpenWeatherMap API key for Weather
+
+## Getting Started
+
+Clone the repo:
 
 ```bash
-  git clone https://github.com/shehari007/mini-react-electron-desktop-app.git
-```
-
-Go to the project directory
-
-```bash
+git clone https://github.com/shehari007/mini-react-electron-desktop-app.git
 cd mini-react-electron-desktop-app
 ```
 
-Install dependencies
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-Start the Electron Project in Windows
+### Run as a web app (development)
+
+```bash
+npm start
+```
+
+### Run as a desktop app (Electron)
 
 ```bash
 npm run electron:start
 ```
-Project will open in window mode not in browser as normal react app would, Happy Hacking!
-## Deployment
 
-Deployment is never been easy before, package.json is already configured for every platform (Window, Linux, MacOs, Web). Just need to run build commands for each platform as follows:
-## For Windows
-```bash
-npm run electron:package:win
-```
-## For Linux
-```bash
-npm run electron:package:linux
-```
-## For MacOS
-```bash
-npm run electron:package:mac
-```
-## For Website
+This starts the React dev server and opens Electron in desktop window mode.
+
+## Configuration
+
+### Weather API key (optional)
+
+The Weather tool uses **OpenWeatherMap**:
+
+- Create a free API key: https://openweathermap.org/api
+- In the app, open **Weather → Settings**
+- Add your **API Key** and (optionally) a **Default City**
+
+Settings are stored locally in `localStorage`.
+
+## Scripts
+
+- `npm start` — React dev server (web)
+- `npm run build` — Production web build
+- `npm test` — Run tests
+- `npm run electron:start` — Run Electron + React dev server
+- `npm run electron:package:win` — Package Windows (NSIS)
+- `npm run electron:package:mac` — Package macOS (DMG)
+- `npm run electron:package:linux` — Package Linux (DEB)
+
+## Packaging / Deployment
+
+### Web build
+
 ```bash
 npm run build
 ```
-Running these commands will give you a package file (Windows->NSIS .exe) || (Linux->.deb) || (macOS->.dmg) || for wesbite you will get the build folder where you can serve the wesbite using:
+
+Serve locally:
 
 ```bash
 npm install -g serve
 serve -s build
 ```
-## Demo Website Link
 
-<a href="https://electron4in1-web-preview.vercel.app/" target="_blank" rel="noreferrer"> Web Preview Here </a>
-_This is just a preview of app, data will not save and lost if tab is closed or menu is changed!_
+### Desktop installers
 
-## Demo Windows Setup
+```bash
+# Windows
+npm run electron:package:win
 
-Latest release is available for desktop users to test and use the electron application, check out the latest release section and download the application for Windows x64
+# macOS
+npm run electron:package:mac
 
+# Linux
+npm run electron:package:linux
+```
 
-## !!IMPORTANT NOTE!!
+## Security note (Electron)
 
-- For this specific app NODE core components enabled & contextIsolation are disabled which is not recommended due to security concerns. However there is no problem with this app as its not used for web browsing and also "CSP inline-scripts" policy is enabled so user can use it with confidence.
-
-- If you enable the preload.js and disabled the node core components the persistent storage wont work.
-
+This project uses Electron settings that are convenient for development and local apps (Node integration / CSP allowing inline scripts). If you plan to ship this broadly, consider hardening Electron security (enable `contextIsolation`, use `preload.js`, and avoid `unsafe-inline`).
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+MIT — see https://choosealicense.com/licenses/mit/
 
+## Feedback / Contact
 
-## Feedback
+- Email: shehariyar@gmail.com
+- GitHub: https://github.com/shehari007
 
-If you have any feedback, please reach out at shehariyar@gmail.com
-dont't forget to give us a star if you like this project.
+If you find this project useful, starring the repo helps a lot.
 
-## Liked my dedication? Buy me a coffee?
-<a href="https://www.buymeacoffee.com/shehari007">☕ Buy Me A Coffee</a>
+## Support
+
+Buy me a coffee: https://www.buymeacoffee.com/shehari007

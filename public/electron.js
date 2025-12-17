@@ -3,129 +3,148 @@ const { app, BrowserWindow, protocol, ipcMain, shell } = require("electron");
 const path = require("path");
 const url = require("url");
 
-let splash
+let splash;
+let mainWindow;
+
 // Create the native browser window.
 function createWindow() {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1280,
     height: 720,
-    frame: false, // Disable the default window frame
-    fullscreen: true, // Start the app in full-screen mode
-    resizable: false,
-    show: false, // don't show the main window
-
-    // Set the path of an additional "preload" script that can be used to
-    // communicate between node-land and browser-land.
+    minWidth: 800,
+    minHeight: 600,
+    frame: false,
+    show: false,
+    backgroundColor: '#f5f5f5',
+    icon: path.join(__dirname, 'logo.png'),
     webPreferences: {
-      // preload: path.join(__dirname, "preload.js"),
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
+      webSecurity: true
     },
   });
 
-  mainWindow.setIcon(path.join(__dirname, 'logo.png'));
-
-  splash = new BrowserWindow({ width: 810, height: 610, transparent: true, frame: false, alwaysOnTop: true });
+  // Create splash screen
+  splash = new BrowserWindow({ 
+    width: 400, 
+    height: 300, 
+    transparent: true, 
+    frame: false, 
+    alwaysOnTop: true,
+    skipTaskbar: true
+  });
   splash.loadURL(`file://${__dirname}/splash.html`);
-  // In production, set the initial browser path to the local bundle generated
-  // by the Create React App build process.
-  // In development, set it to localhost to allow live/hot-reloading.
+
+  // Load the app
   const appURL = app.isPackaged
     ? url.format({
-      pathname: path.join(__dirname, "index.html"),
-      protocol: "file:",
-      slashes: true,
-    })
+        pathname: path.join(__dirname, "index.html"),
+        protocol: "file:",
+        slashes: true,
+      })
     : "http://localhost:3000";
+  
   mainWindow.loadURL(appURL);
 
+  // Show main window when ready
   mainWindow.once('ready-to-show', () => {
-    splash.destroy();
+    if (splash && !splash.isDestroyed()) {
+      splash.destroy();
+    }
     mainWindow.show();
-    // Listen for IPC message from the renderer process
-    // Handle window minimize
-    ipcMain.on('minimize', () => {
-      mainWindow.minimize();
-    });
-
-    // Handle window close
-    ipcMain.on('close', () => {
-      mainWindow.close();
-    });
-
-    ipcMain.on('enter-fullscreen', () => {
-      mainWindow.maximize();
-    });
-
-    ipcMain.on('restore-fullscreen', () => {
-      mainWindow.unmaximize();
-    });
-
-
+    mainWindow.maximize();
   });
-  // Automatically open Chrome's DevTools in development mode.
+
+  // Handle window closed
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
+
+  // Open DevTools in development
   if (!app.isPackaged) {
     mainWindow.webContents.openDevTools();
-
   }
 }
 
-// Setup a local proxy to adjust the paths of requested files when loading
-// them from the local production bundle (e.g.: local fonts, etc...).
+// Setup IPC handlers
+function setupIPC() {
+  // Window controls
+  ipcMain.on('minimize', () => {
+    if (mainWindow) mainWindow.minimize();
+  });
+
+  ipcMain.on('close', () => {
+    if (mainWindow) mainWindow.close();
+  });
+
+  ipcMain.on('maximize', () => {
+    if (mainWindow) {
+      if (mainWindow.isMaximized()) {
+        mainWindow.unmaximize();
+      } else {
+        mainWindow.maximize();
+      }
+    }
+  });
+
+  ipcMain.on('enter-fullscreen', () => {
+    if (mainWindow) mainWindow.maximize();
+  });
+
+  ipcMain.on('restore-fullscreen', () => {
+    if (mainWindow) mainWindow.unmaximize();
+  });
+
+  // External links
+  ipcMain.on('open-external-link', (event, url) => {
+    shell.openExternal(url);
+  });
+}
+
+// Setup local file protocol
 function setupLocalFilesNormalizerProxy() {
   protocol.registerHttpProtocol(
     "file",
     (request, callback) => {
-      const url = request.url.substr(8);
-      callback({ path: path.normalize(`${__dirname}/${url}`) });
-    },
-    (error) => {
-      if (error) console.error("Failed to register protocol");
-    },
+      const requestUrl = request.url.substr(8);
+      callback({ path: path.normalize(`${__dirname}/${requestUrl}`) });
+    }
   );
 }
 
-// This method will be called when Electron has finished its initialization and
-// is ready to create the browser windows.
-// Some APIs can only be used after this event occurs.
+// App ready
 app.whenReady().then(() => {
   createWindow();
-
-  ipcMain.on('open-external-link', (event, url) => {
-    // Open the URL in the default web browser
-    shell.openExternal(url);
-  });
+  setupIPC();
   setupLocalFilesNormalizerProxy();
 
-  app.on("activate", function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
+  app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
     }
   });
 });
 
-// Quit when all windows are closed, except on macOS.
-// There, it's common for applications and their menu bar to stay active until
-// the user quits  explicitly with Cmd + Q.
-app.on("window-all-closed", function () {
+// Quit when all windows are closed (except macOS)
+app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
 });
 
-// If your app has no need to navigate or only needs to navigate to known pages,
-// it is a good idea to limit navigation outright to that known scope,
-// disallowing any other kinds of navigation.
-const allowedNavigationDestinations = "https://my-electron-app.com";
+// Security: Limit navigation
 app.on("web-contents-created", (event, contents) => {
   contents.on("will-navigate", (event, navigationUrl) => {
     const parsedUrl = new URL(navigationUrl);
-
-    if (!allowedNavigationDestinations.includes(parsedUrl.origin)) {
+    // Allow localhost for development and file protocol for production
+    if (!parsedUrl.protocol.includes('file') && !parsedUrl.hostname.includes('localhost')) {
       event.preventDefault();
     }
+  });
+  
+  // Prevent new window creation
+  contents.setWindowOpenHandler(() => {
+    return { action: 'deny' };
   });
 });
 

@@ -1,38 +1,643 @@
-.App {
-  text-align: center;
+/* ===== Global App Styles ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+/* ===== Layout ===== */
+.app-layout {
   min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+}
+
+/* ===== Sidebar ===== */
+.app-sider {
+  background: linear-gradient(180deg, #1e1e2e 0%, #2d2d44 100%) !important;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+  position: fixed !important;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+.app-sider .ant-layout-sider-children {
   display: flex;
   flex-direction: column;
+}
+
+.logo-container {
+  height: 70px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.logo-icon {
+  font-size: 24px;
+}
+
+.logo-icon-only {
+  font-size: 28px;
+}
+
+.side-menu {
+  flex: 1;
+  background: transparent !important;
+  border-right: none !important;
+  padding: 16px 8px;
+}
+
+.side-menu .ant-menu-item {
+  height: 48px !important;
+  line-height: 48px !important;
+  margin: 4px 0 !important;
+  border-radius: 10px !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  transition: all 0.3s ease !important;
+}
+
+.side-menu .ant-menu-item:hover {
+  background: rgba(99, 102, 241, 0.2) !important;
+  color: #fff !important;
+}
+
+.side-menu .ant-menu-item-selected {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.side-menu .ant-menu-item .anticon {
+  font-size: 18px;
+}
+
+/* ===== Main Layout ===== */
+.main-layout {
+  margin-left: 220px;
+  transition: margin-left 0.3s ease;
+  min-height: 100vh;
+  background: transparent;
+}
+
+.ant-layout-sider-collapsed ~ .main-layout {
+  margin-left: 80px;
+}
+
+/* ===== Header ===== */
+.app-header {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px);
+  padding: 0 24px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 64px !important;
+  line-height: 64px !important;
+  padding-right: 24px !important;
+}
+
+.is-electron .app-header {
+  padding-right: 100px !important; /* Space for Electron window controls */
+}
+
+.menu-toggle {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: #f3f4f6;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  font-size: 18px;
+  color: #374151;
+}
+
+.menu-toggle:hover {
+  background: #e5e7eb;
+  transform: scale(1.05);
+}
+
+.header-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.version-badge {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ===== Content ===== */
+.app-content {
+  padding: 24px;
+  min-height: calc(100vh - 64px);
+  min-width: 0;
+}
+
+.content-wrapper {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  min-width: 0;
+}
+
+/* ===== Window Controls (Electron) ===== */
+.window-controls {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 1000;
+}
+
+.window-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 12px;
+}
+
+.window-btn.minimize {
+  background: #fbbf24;
+  color: #78350f;
+}
+
+.window-btn.minimize:hover {
+  background: #f59e0b;
+}
+
+.window-btn.close {
+  background: #ef4444;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.window-btn.close:hover {
+  background: #dc2626;
 }
 
-@keyframes App-logo-spin {
+/* ===== Mobile Overlay ===== */
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+}
+
+/* ===== Calculator Styles ===== */
+.calculator-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* Calculator page layout (Tabs + History) */
+.calculator-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 420px) 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.calculator-display {
+  background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+  padding: 24px;
+  text-align: right;
+}
+
+.calculator-display input {
+  background: transparent !important;
+  border: none !important;
+  color: white !important;
+  font-size: 36px !important;
+  font-weight: 300 !important;
+  text-align: right !important;
+  padding: 0 !important;
+}
+
+.calculator-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 20px;
+  background: #f8fafc;
+}
+
+.calculator-buttons .ant-btn {
+  height: 60px !important;
+  font-size: 20px !important;
+  font-weight: 500 !important;
+  border-radius: 12px !important;
+  border: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.calculator-buttons .ant-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.calc-btn-number {
+  background: white !important;
+  color: #374151 !important;
+}
+
+.calc-btn-operator {
+  background: #e0e7ff !important;
+  color: #4338ca !important;
+}
+
+.calc-btn-equal {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+  color: white !important;
+}
+
+.calc-btn-clear {
+  background: #fef2f2 !important;
+  color: #dc2626 !important;
+}
+
+/* ===== Todo List Styles ===== */
+.todo-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.todo-header {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  padding: 24px;
+  color: white;
+}
+
+.todo-input-section {
+  display: flex;
+  gap: 12px;
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.todo-input-section .ant-input {
+  border-radius: 10px;
+  height: 44px;
+}
+
+.todo-list {
+  padding: 12px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+  margin: 8px 0;
+  transition: all 0.3s ease;
+}
+
+.todo-item:hover {
+  background: #f1f5f9;
+  transform: translateX(4px);
+}
+
+.todo-item.completed {
+  opacity: 0.6;
+}
+
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+}
+
+/* ===== Clock Styles ===== */
+.clock-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  padding: 32px;
+}
+
+.clock-display {
+  font-size: 64px;
+  font-weight: 200;
+  color: #1f2937;
+  font-family: 'Inter', monospace;
+  letter-spacing: -2px;
+}
+
+.clock-date {
+  font-size: 16px;
+  color: #6b7280;
+  margin-top: 8px;
+}
+
+.timer-card, .stopwatch-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  padding: 24px;
+}
+
+.timer-display {
+  font-size: 48px;
+  font-weight: 300;
+  color: #1f2937;
+  margin: 16px 0;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ===== Weather Styles ===== */
+.weather-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.weather-main-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 32px;
+  color: white;
+  text-align: center;
+}
+
+.weather-temp {
+  font-size: 72px;
+  font-weight: 200;
+  line-height: 1;
+}
+
+.weather-city {
+  font-size: 24px;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.weather-desc {
+  font-size: 16px;
+  opacity: 0.9;
+  text-transform: capitalize;
+}
+
+.weather-details-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+}
+
+.weather-detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.weather-detail-item:last-child {
+  border-bottom: none;
+}
+
+/* ===== Home Page Styles ===== */
+.home-hero {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border-radius: 24px;
+  padding: 48px;
+  color: white;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.home-hero h1 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.home-hero p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.feature-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.feature-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.feature-desc {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+/* ===== About Page Styles ===== */
+.about-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  padding: 40px;
+  text-align: center;
+}
+
+.about-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 40px;
+}
+
+/* ===== Responsive Styles ===== */
+@media (max-width: 992px) {
+  .main-layout {
+    margin-left: 80px;
+  }
+  
+  .weather-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    margin-left: 0 !important;
+  }
+  
+  .app-sider {
+    position: fixed !important;
+    z-index: 100;
+  }
+  
+  .app-content {
+    padding: 16px;
+  }
+  
+  .home-hero {
+    padding: 32px 20px;
+  }
+  
+  .home-hero h1 {
+    font-size: 28px;
+  }
+  
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .clock-display {
+    font-size: 40px;
+  }
+  
+  .weather-temp {
+    font-size: 56px;
+  }
+  
+  .calculator-buttons .ant-btn {
+    height: 50px !important;
+    font-size: 16px !important;
+  }
+
+  .calculator-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .calculator-buttons {
+    gap: 8px;
+    padding: 12px;
+  }
+  
+  .calculator-buttons .ant-btn {
+    height: 45px !important;
+    font-size: 14px !important;
+  }
+  
+  .timer-controls .ant-btn {
+    padding: 4px 12px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(10px);
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0);
   }
+}
+
+.content-wrapper > * {
+  animation: fadeIn 0.3s ease;
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

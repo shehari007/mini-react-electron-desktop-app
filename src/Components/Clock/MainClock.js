@@ -1,30 +1,28 @@
-import React from 'react'
-import Clock from './SubComponents/Clock'
-import CountdownTimer from './SubComponents/CountdownTimer'
-import Stopwatch from './SubComponents/Stopwatch'
+import React from 'react';
+import Clock from './SubComponents/Clock';
+import CountdownTimer from './SubComponents/CountdownTimer';
+import Stopwatch from './SubComponents/Stopwatch';
 
 const MainClock = () => {
-  
   return (
-    <>
-      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-        <Clock />
-      </div>
+    <div style={{ width: '100%' }}>
+      {/* Main Clock */}
+      <Clock />
+      
+      {/* Timer & Stopwatch Grid */}
       <div
         style={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'center', 
-          alignItems: 'center',
-          marginTop: '15px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gap: '24px',
+          marginTop: '24px',
         }}
       >
         <CountdownTimer />
-        <div style={{ margin: '0 10px' }}></div>
         <Stopwatch />
       </div>
-    </>
-  )
-}
+    </div>
+  );
+};
 
-export default MainClock
+export default MainClock;

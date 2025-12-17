@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Typography, Button, Card, Alert } from 'antd';
-
-const { Title } = Typography;
+import { Button } from 'antd';
+import { PlayCircleOutlined, PauseCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 
 function CountdownTimer() {
-  const [timeLeft, setTimeLeft] = useState(10); 
+  const [timeLeft, setTimeLeft] = useState(60);
   const [isActive, setIsActive] = useState(false);
-  const [adjustableTime, setAdjustableTime] = useState(10); 
+  const [selectedTime, setSelectedTime] = useState(60);
   const audioRef = useRef(null);
 
   useEffect(() => {
@@ -14,10 +13,12 @@ function CountdownTimer() {
 
     if (isActive && timeLeft > 0) {
       intervalId = setInterval(() => {
-        setTimeLeft((prevTime) => prevTime - 1);
-        if (timeLeft <= 4 && timeLeft > 0) {
-          audioRef.current.play(); 
-        }
+        setTimeLeft((prevTime) => {
+          if (prevTime <= 4 && prevTime > 0 && audioRef.current) {
+            audioRef.current.play().catch(() => {});
+          }
+          return prevTime - 1;
+        });
       }, 1000);
     }
 
@@ -28,55 +29,137 @@ function CountdownTimer() {
     return () => clearInterval(intervalId);
   }, [isActive, timeLeft]);
 
-  const startTimer = () => {
-    setIsActive(true);
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
-  const stopTimer = () => {
-    setIsActive(false);
-  };
+  const presets = [
+    { label: '30s', value: 30 },
+    { label: '1m', value: 60 },
+    { label: '5m', value: 300 },
+    { label: '10m', value: 600 },
+  ];
 
-  const resetTimer = () => {
-    setIsActive(false);
-    setTimeLeft(adjustableTime);
-  };
-
-  const adjustTime = (newTime) => {
-    if (!isActive) {
-      setAdjustableTime(newTime);
-      setTimeLeft(newTime);
-    }
-  };
+  const progress = ((selectedTime - timeLeft) / selectedTime) * 100;
 
   return (
-    <Card
-    title="Countdown Timer"
-   bordered={true}
-   style={{
-    width: 450,
-                height: 250,
-    textAlign: 'center',
-    
-    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', 
-}}
-> <Alert style={{marginTop:'-8px'}}  message="A sound will alert when timer is less than 4 sec" type="warning" showIcon />
-    <div>
-      <Title style={{marginTop:'0px'}} level={2}>{timeLeft} seconds</Title>
-      <Button type='primary' success onClick={startTimer} disabled={isActive}>
-        Start
-      </Button>
-      <Button onClick={stopTimer} type='primary' danger>Stop</Button>
-      <Button onClick={resetTimer}>Reset</Button>
-      <Button onClick={() => adjustTime(10)}>10 seconds</Button>
-      <Button onClick={() => adjustTime(30)}>30 seconds</Button>
-      <Button onClick={() => adjustTime(60)}>60 seconds</Button>
+    <div style={{
+      background: 'white',
+      borderRadius: '20px',
+      padding: '32px',
+      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.08)',
+      textAlign: 'center'
+    }}>
+      <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>
+        ⏱️ Countdown Timer
+      </div>
+      
+      {/* Progress Ring */}
+      <div style={{
+        position: 'relative',
+        width: '160px',
+        height: '160px',
+        margin: '16px auto',
+      }}>
+        <svg width="160" height="160" style={{ transform: 'rotate(-90deg)' }}>
+          <circle
+            cx="80" cy="80" r="70"
+            fill="none"
+            stroke="#e5e7eb"
+            strokeWidth="8"
+          />
+          <circle
+            cx="80" cy="80" r="70"
+            fill="none"
+            stroke={timeLeft <= 4 ? '#ef4444' : '#6366f1'}
+            strokeWidth="8"
+            strokeLinecap="round"
+            strokeDasharray={440}
+            strokeDashoffset={440 - (440 * progress / 100)}
+            style={{ transition: 'stroke-dashoffset 0.3s ease' }}
+          />
+        </svg>
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          fontSize: '36px',
+          fontWeight: '300',
+          color: timeLeft <= 4 ? '#ef4444' : '#1f2937'
+        }}>
+          {formatTime(timeLeft)}
+        </div>
+      </div>
+
+      {/* Preset Buttons */}
+      <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: '20px' }}>
+        {presets.map(preset => (
+          <Button
+            key={preset.value}
+            size="small"
+            type={selectedTime === preset.value ? 'primary' : 'default'}
+            disabled={isActive}
+            onClick={() => {
+              setSelectedTime(preset.value);
+              setTimeLeft(preset.value);
+            }}
+          >
+            {preset.label}
+          </Button>
+        ))}
+      </div>
+
+      {/* Control Buttons */}
+      <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+        {!isActive ? (
+          <Button
+            type="primary"
+            icon={<PlayCircleOutlined />}
+            onClick={() => setIsActive(true)}
+            disabled={timeLeft === 0}
+          >
+            Start
+          </Button>
+        ) : (
+          <Button
+            danger
+            icon={<PauseCircleOutlined />}
+            onClick={() => setIsActive(false)}
+          >
+            Pause
+          </Button>
+        )}
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={() => {
+            setIsActive(false);
+            setTimeLeft(selectedTime);
+          }}
+        >
+          Reset
+        </Button>
+      </div>
+
+      {timeLeft <= 4 && timeLeft > 0 && (
+        <div style={{
+          marginTop: '16px',
+          padding: '8px 16px',
+          background: '#fef2f2',
+          color: '#dc2626',
+          borderRadius: '8px',
+          fontSize: '13px'
+        }}>
+          ⚠️ Time is almost up!
+        </div>
+      )}
+
       <audio ref={audioRef}>
-        <source src="audio.wav" type="audio/mpeg" />
-        Your browser does not support the audio element.
+        <source src="audio.wav" type="audio/wav" />
       </audio>
     </div>
-    
-    </Card>
   );
 }
 

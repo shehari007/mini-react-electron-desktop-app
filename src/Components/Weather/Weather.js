@@ -1,286 +1,347 @@
-import React, { useState, useEffect, useReducer } from 'react';
-import { Card, Typography, Input, List, FloatButton, Modal, Button, Form, Alert } from 'antd';
-import { SettingOutlined } from '@ant-design/icons';
-const { Title, Text } = Typography;
-const { Search } = Input;
-const fs = window.require('fs');
-const { ipcRenderer } = window.require('electron');
+import React, { useState, useEffect, useCallback } from 'react';
+import { Input, Button, Form, Modal, Alert, Spin } from 'antd';
+import { 
+  SettingOutlined, 
+  SearchOutlined,
+  EnvironmentOutlined,
+  CloudOutlined,
+  SwapOutlined,
+  EyeOutlined
+} from '@ant-design/icons';
+
+// Check if running in Electron
+const isElectron = () => {
+  return typeof window !== 'undefined' && 
+    typeof window.process === 'object' && 
+    window.process.type === 'renderer';
+};
+
+// Storage helper functions - use localStorage for both web and electron
+const storage = {
+  get: (key, defaultValue) => {
+    try {
+      const item = localStorage.getItem(key);
+      return item ? JSON.parse(item) : defaultValue;
+    } catch (e) {
+      return defaultValue;
+    }
+  },
+  set: (key, value) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {
+      console.error('Storage error:', e);
+    }
+  }
+};
 
 const Weather = () => {
-
-
-  const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
-  const [defCity, setDefCity] = useState('');
-  const [ApiKey, setApiKey] = useState('');
-  const [ListData, setListData] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [city, setCity] = useState(defCity === '' ? 'istanbul' : defCity);
   const [weatherData, setWeatherData] = useState(null);
-  const [SearchCity, setSearchCity] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchCity, setSearchCity] = useState('');
+  const [config, setConfig] = useState(() => 
+    storage.get('weatherConfig', { city: '', apiKey: '' })
+  );
 
+  const kelvinToCelsius = (kelvin) => (kelvin - 273.15).toFixed(1);
 
-  const urlToOpen = 'https://home.openweathermap.org/api_keys';
+  const fetchWeather = useCallback(async (city) => {
+    if (!config.apiKey) {
+      setError('Please configure your API key in settings');
+      return;
+    }
 
-  const handleLinkClick = () => {
-    // Send an IPC message to the main process to open the URL
-    ipcRenderer.send('open-external-link', urlToOpen);
+    const cityToSearch = city || config.city || 'London';
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${cityToSearch}&APPID=${config.apiKey}`
+      );
+
+      if (!response.ok) {
+        throw new Error(response.status === 404 ? 'City not found' : 'Failed to fetch weather');
+      }
+
+      const data = await response.json();
+      setWeatherData(data);
+    } catch (err) {
+      setError(err.message);
+      setWeatherData(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [config.apiKey, config.city]);
+
+  useEffect(() => {
+    if (config.apiKey && config.city) {
+      fetchWeather();
+    }
+  }, [config.apiKey, config.city, fetchWeather]);
+
+  const handleSearch = () => {
+    if (searchCity.trim()) {
+      fetchWeather(searchCity.trim());
+    }
   };
 
-  const onFinish = (values) => {
-
-    const dataToWrite = {
-      cityname: !values.defcity ? defCity : values.defcity,
-      apiKey: !values.apikey ? '' : values.apikey,
+  const handleSaveSettings = (values) => {
+    const newConfig = {
+      city: values.city || config.city,
+      apiKey: values.apiKey || config.apiKey
     };
-
-    writeDataToFile(dataToWrite);
+    storage.set('weatherConfig', newConfig);
+    setConfig(newConfig);
     setIsModalOpen(false);
-  };
-
-  useEffect(() => {
-    try {
-      const data = fs.readFileSync('weather.json', 'utf-8');
-      const parsedData = JSON.parse(data);
-
-      setDefCity(parsedData.cityname);
-      setApiKey(parsedData.apiKey);
-    } catch (error) {
-      console.error('Error reading data from file:', error);
-
-      // File does not exist, create it with default values
-      const defaultData = {
-        cityname: '',
-        apiKey: '',
-      };
-
-      fs.writeFileSync('weather.json', JSON.stringify(defaultData, null, 2), 'utf-8');
-
-      // Set the default values in your state
-      setDefCity(defaultData.cityname);
-      setApiKey(defaultData.apiKey);
+    if (newConfig.apiKey) {
+      fetchWeather(newConfig.city);
     }
-  }, [ignored]);
-  function writeDataToFile(data) {
-    try {
-      fs.writeFileSync('weather.json', JSON.stringify(data, null, 2), 'utf-8');
-      forceUpdate();
-    } catch (error) {
-      console.error('Error writing data to file:', error);
+  };
+
+  const getWeatherIcon = (iconCode) => {
+    return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+  };
+
+  const openExternalLink = (url) => {
+    if (isElectron()) {
+      try {
+        const { ipcRenderer } = window.require('electron');
+        ipcRenderer.send('open-external-link', url);
+      } catch (e) {
+        window.open(url, '_blank');
+      }
+    } else {
+      window.open(url, '_blank');
     }
-  }
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-
-    setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const kelvinToCelsius = (kelvin) => {
-    return (kelvin - 273.15).toFixed(1);
-  };
-
-  useEffect(() => {
-
-    setWeatherData(() => null)
-    setListData(() => null)
-    const data = fs.readFileSync('weather.json', 'utf-8');
-    var fileCityname = JSON.parse(data).cityname;
-    if (city) {
-      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${SearchCity !== '' ? SearchCity : !fileCityname ? city : fileCityname}&APPID=${JSON.parse(data).apiKey}`)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        })
-        .then((data) => {
-          // console.log(data)
-          setWeatherData(data);
-          setListData([
-            {
-              title: 'Temps °C (High / Low)',
-              desc: `${kelvinToCelsius(data.main.temp_max)} °C / ${kelvinToCelsius(data.main.temp_min)} °C`
-            },
-            {
-              title: 'Humidity % / Pressure hPa',
-              desc: `${data.main.humidity} % / ${data.main.pressure} hPa`
-            },
-            {
-              title: 'Wind Speed m/s',
-              desc: `${data.wind.speed} m/s`
-            },
-            {
-              title: 'Sunrise / Sunset Time',
-              desc: new Date(data.sys.sunrise * 1000).toLocaleTimeString() + ' / ' + new Date(data.sys.sunset * 1000).toLocaleTimeString()
-            },
-          ])
-        })
-        .catch((error) => {
-          console.error('Fetch error:', error);
-        });
-    }
-  }, [ignored]);
-
-  const handleSearch = (value) => {
-    console.log(value)
-    setSearchCity(value);
-    forceUpdate();
-  }
-
-  const getWeatherIconUrl = (iconCode) => {
-    const iconType = iconCode.endsWith('n') ? iconCode.replace('n', 'd') : iconCode;
-    return `https://openweathermap.org/img/wn/${iconType}.png`;
   };
 
   return (
-
-    <>
-      <FloatButton style={{
-        right: 94,
-      }}
-        tooltip="Settings"
-        type="primary"
-        shape="square"
-        onClick={showModal}
-        icon={<SettingOutlined />} />
-
-
-      <Card
-        bordered={true}
-        style={{
-          width: 550,
-          margin: '0 auto',
-          boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-        }}
-      > <Search placeholder="Search city name here.." onSearch={value => handleSearch(value)} />
-      </Card>
-
-      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
-        <Card
-          title="Basic Weather App"
-          bordered={true}
-          style={{
-            width: 550,
-            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-            textAlign: 'center'
-          }}
-        >
-          {weatherData ? (
-            <> <div style={{ display: 'flex', flex: 'row', justifyContent: 'space-evenly' }}>
-              <Text style={{ fontSize: '55px', fontWeight: 'bold', marginTop: '18px' }}>{kelvinToCelsius(weatherData.main.temp)} °C</Text>
-              <img
-                src={getWeatherIconUrl(weatherData.weather[0].icon)}
-                alt="Weather Icon"
-                style={{ width: '125px', height: '125px' }} />
-            </div>
-              <Title level={4}>{weatherData.name}</Title>
-              <Text style={{ fontStyle: 'italic' }}>{weatherData.weather[0].description}</Text>
-            </>
-          ) : (
-            <Alert
-              style={{ textAlign: 'left' }}
-              message={<b>Weather Config Error</b>}
-              showIcon
-              description={<><ul><li>API-KEY not found, set an API-KEY and default city name in weather settings.</li><li>Entered API-KEY is not a valid key.</li><li>Searched city is invalid</li></ul>
-                <p style={{ textAlign: 'center' }}>You can get your free API-KEY from <a href='##' onClick={handleLinkClick}>here</a></p>
-              </>}
-              type="warning"
-            />
-
-          )}
-        </Card>
-        {ListData ?
-          <Card
-            title="Details"
-            style={{
-              width: 550,
-              boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-              textAlign: 'center'
-            }}
-
+    <div className="weather-page">
+      {/* Search Section */}
+      <div style={{ 
+        background: 'white', 
+        borderRadius: '16px', 
+        padding: '20px',
+        marginBottom: '24px',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)'
+      }}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <Input
+            placeholder="Search for a city..."
+            prefix={<SearchOutlined style={{ color: '#9ca3af' }} />}
+            value={searchCity}
+            onChange={(e) => setSearchCity(e.target.value)}
+            onPressEnter={handleSearch}
+            style={{ flex: 1, minWidth: '220px' }}
+            size="large"
+          />
+          <Button type="primary" onClick={handleSearch} size="large">
+            Search
+          </Button>
+          <Button 
+            icon={<SettingOutlined />} 
+            onClick={() => setIsModalOpen(true)}
+            size="large"
           >
-            <List
-              grid={{
-                gutter: 16,
-                column: 2,
-              }}
-              dataSource={ListData}
-              renderItem={(item) => (
-                <List.Item>
-                  <Card style={{
-                    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-                    textAlign: 'center'
-                  }} title={item.title}>{item.desc}</Card>
-                </List.Item>
-              )} />
-          </Card> : null}
+            Settings
+          </Button>
+        </div>
       </div>
 
-      {/** Setting Modal **/}
-      <Modal title="Weather App Settings" open={isModalOpen} onOk={handleOk} footer={null} onCancel={handleCancel}>
+      {/* Loading State */}
+      {loading && (
+        <div style={{ textAlign: 'center', padding: '60px' }}>
+          <Spin size="large" />
+          <p style={{ marginTop: '16px', color: '#6b7280' }}>Fetching weather data...</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !loading && (
+        <Alert
+          message="Weather Error"
+          description={
+            <div>
+              <p>{error}</p>
+              {!config.apiKey && (
+                <p style={{ marginTop: '12px' }}>
+                  Get your free API key from{' '}
+                  <a 
+                    href="#" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      openExternalLink('https://home.openweathermap.org/api_keys');
+                    }}
+                  >
+                    OpenWeatherMap
+                  </a>
+                </p>
+              )}
+            </div>
+          }
+          type="warning"
+          showIcon
+          style={{ borderRadius: '16px', marginBottom: '24px' }}
+        />
+      )}
+
+      {/* Weather Data */}
+      {weatherData && !loading && (
+        <div className="weather-container">
+          {/* Main Weather Card */}
+          <div className="weather-main-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              <EnvironmentOutlined style={{ fontSize: '20px' }} />
+              <span style={{ fontSize: '16px', opacity: 0.9 }}>{weatherData.sys?.country}</span>
+            </div>
+            <h2 className="weather-city">{weatherData.name}</h2>
+            <img 
+              src={getWeatherIcon(weatherData.weather[0].icon)} 
+              alt={weatherData.weather[0].description}
+              style={{ width: '100px', height: '100px' }}
+            />
+            <div className="weather-temp">{kelvinToCelsius(weatherData.main.temp)}°</div>
+            <div className="weather-desc">{weatherData.weather[0].description}</div>
+            <div style={{ 
+              marginTop: '20px', 
+              display: 'flex', 
+              justifyContent: 'center', 
+              gap: '24px',
+              fontSize: '14px',
+              opacity: 0.9
+            }}>
+              <span>H: {kelvinToCelsius(weatherData.main.temp_max)}°</span>
+              <span>L: {kelvinToCelsius(weatherData.main.temp_min)}°</span>
+            </div>
+          </div>
+
+          {/* Weather Details Card */}
+          <div className="weather-details-card">
+            <h3 style={{ marginBottom: '20px', fontWeight: '600', color: '#1f2937' }}>
+              Weather Details
+            </h3>
+            
+            <div className="weather-detail-item">
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#6b7280' }}>
+                <SwapOutlined /> Feels Like
+              </span>
+              <span style={{ fontWeight: '600' }}>{kelvinToCelsius(weatherData.main.feels_like)}°C</span>
+            </div>
+
+            <div className="weather-detail-item">
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#6b7280' }}>
+                💧 Humidity
+              </span>
+              <span style={{ fontWeight: '600' }}>{weatherData.main.humidity}%</span>
+            </div>
+
+            <div className="weather-detail-item">
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#6b7280' }}>
+                🌬️ Wind Speed
+              </span>
+              <span style={{ fontWeight: '600' }}>{weatherData.wind.speed} m/s</span>
+            </div>
+
+            <div className="weather-detail-item">
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#6b7280' }}>
+                📊 Pressure
+              </span>
+              <span style={{ fontWeight: '600' }}>{weatherData.main.pressure} hPa</span>
+            </div>
+
+            <div className="weather-detail-item">
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#6b7280' }}>
+                <EyeOutlined /> Visibility
+              </span>
+              <span style={{ fontWeight: '600' }}>{(weatherData.visibility / 1000).toFixed(1)} km</span>
+            </div>
+
+            <div className="weather-detail-item">
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#6b7280' }}>
+                <CloudOutlined /> Clouds
+              </span>
+              <span style={{ fontWeight: '600' }}>{weatherData.clouds?.all}%</span>
+            </div>
+
+            <div style={{ 
+              marginTop: '20px', 
+              padding: '16px', 
+              background: '#f8fafc', 
+              borderRadius: '12px',
+              display: 'flex',
+              justifyContent: 'space-around'
+            }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '24px' }}>🌅</div>
+                <div style={{ fontSize: '12px', color: '#6b7280' }}>Sunrise</div>
+                <div style={{ fontWeight: '600' }}>
+                  {new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '24px' }}>🌇</div>
+                <div style={{ fontSize: '12px', color: '#6b7280' }}>Sunset</div>
+                <div style={{ fontWeight: '600' }}>
+                  {new Date(weatherData.sys.sunset * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Settings Modal */}
+      <Modal
+        title="Weather Settings"
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={null}
+      >
         <Form
-          name="basic"
-          labelCol={{
-            span: 8,
-          }}
-          wrapperCol={{
-            span: 16,
-          }}
-          style={{
-            maxWidth: 600,
-            marginTop: '50px'
-          }}
-          initialValues={{
-            remember: false,
-          }}
-          onFinish={onFinish}
-          autoComplete="off"
+          layout="vertical"
+          onFinish={handleSaveSettings}
+          initialValues={config}
+          style={{ marginTop: '20px' }}
         >
           <Form.Item
-            label="Set Default City Name"
-            name="defcity"
-            rules={[
-              {
-                required: false,
-                message: 'Please input your city name',
-              },
-            ]}
+            label="Default City"
+            name="city"
           >
-            <Input defaultValue={defCity} placeholder='enter city name' />
+            <Input placeholder="Enter city name (e.g., London)" />
           </Form.Item>
 
           <Form.Item
-            label="Set API-KEY"
-            name="apikey"
-            rules={[
-              {
-                required: false,
-                message: 'Please input your API-KEY!',
-              },
-            ]}
+            label="API Key"
+            name="apiKey"
+            extra={
+              <span>
+                Get your free API key from{' '}
+                <a 
+                  href="#" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    openExternalLink('https://home.openweathermap.org/api_keys');
+                  }}
+                >
+                  OpenWeatherMap
+                </a>
+              </span>
+            }
           >
-            <Input.Password defaultValue={ApiKey} placeholder='enter api key here' />
+            <Input.Password placeholder="Enter your API key" />
           </Form.Item>
 
-          <Form.Item
-            wrapperCol={{
-              offset: 8,
-              span: 16,
-            }}
-          >
-            <Button type="primary" htmlType="submit">
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block>
               Save Settings
             </Button>
           </Form.Item>
         </Form>
       </Modal>
-    </>
-
+    </div>
   );
 };
 
