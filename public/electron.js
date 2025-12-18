@@ -36,15 +36,24 @@ function createWindow() {
   splash.loadURL(`file://${__dirname}/splash.html`);
 
   // Load the app
-  const appURL = app.isPackaged
-    ? url.format({
-        pathname: path.join(__dirname, "index.html"),
-        protocol: "file:",
-        slashes: true,
-      })
-    : "http://localhost:3000";
+  let appURL;
+  if (app.isPackaged) {
+    // For packaged app, load from resources
+    appURL = url.format({
+      pathname: path.join(__dirname, "index.html"),
+      protocol: "file:",
+      slashes: true,
+    });
+  } else {
+    appURL = "http://localhost:3000";
+  }
   
   mainWindow.loadURL(appURL);
+
+  // Debug: Log loading errors
+  mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+    console.error('Failed to load:', errorCode, errorDescription);
+  });
 
   // Show main window when ready
   mainWindow.once('ready-to-show', () => {

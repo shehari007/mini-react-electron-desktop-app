@@ -40,7 +40,8 @@
     },
     "mac": {
       "target": "dmg",
-      "icon": "public/logo.png"
+      "icon": "public/logo.png",
+      "category": "public.app-category.utilities"
     },
     "win": {
       "target": "nsis",
