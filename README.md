@@ -60,22 +60,22 @@ Demo (web preview): https://appbox.msyb.dev/
 ## Screenshots
 
 <div align="center">
-  <img src="screenshots/1.png" alt="Home" />
+  <img src="screenshots/1.webp" alt="Home" />
   <p align="center"><em>Home</em></p>
 
-  <img src="screenshots/2.png" alt="Calculator" />
+  <img src="screenshots/2.webp" alt="Calculator" />
   <p align="center"><em>Calculator With History</em></p>
 
-  <img src="screenshots/3.png" alt="Todo List" />
+  <img src="screenshots/3.webp" alt="Todo List" />
   <p align="center"><em>Converters Utility</em></p>
 
-  <img src="screenshots/4.png" alt="Clock & Timer" />
+  <img src="screenshots/4.webp" alt="Clock & Timer" />
   <p align="center"><em>Clock & Timer</em></p>
 
-  <img src="screenshots/5.png" alt="world-clock" />
+  <img src="screenshots/5.webp" alt="world-clock" />
   <p align="center"><em>World Clock</em></p>
 
-  <img src="screenshots/6.png" alt="About" />
+  <img src="screenshots/6.webp" alt="About" />
   <p align="center"><em>About</em></p>
 </div>
 
