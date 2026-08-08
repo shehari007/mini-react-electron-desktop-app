@@ -1,88 +1,125 @@
 {
   "name": "appbox",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "private": true,
   "author": "Muhammad Sheharyar Butt <shehariyar@gmail.com> (https://github.com/shehari007)",
-  "description": "AppBox - All-in-One Utility Toolbox with Calculator, Converters, Todo, Clock, Weather & More",
-  "homepage": "./",
-  "main": "./public/electron.js",
-  "dependencies": {
-    "@ant-design/icons": "^6.1.0",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.1",
-    "@testing-library/user-event": "^14.6.1",
-    "antd": "^6.1.1",
-    "mathjs": "^15.1.0",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^5.1.0"
+  "description": "AppBox — 36 offline-first utilities in one app. Calculators, converters, developer tools, timers, finance, health and more.",
+  "license": "MIT",
+  "main": "dist-electron/main.js",
+  "engines": {
+    "node": ">=20.9.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "electron:start": "concurrently -k \"cross-env BROWSER=none npm start\" \"wait-on http://127.0.0.1:3000 && electron .\"",
-    "electron:package:mac": "npm run build && electron-builder -m -c.extraMetadata.main=build/electron.js",
-    "electron:package:win": "npm run build && electron-builder -w -c.extraMetadata.main=build/electron.js",
-    "electron:package:linux": "npm run build && electron-builder -l -c.extraMetadata.main=build/electron.js"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "electron:build": "vite build",
+    "electron:dev": "cross-env NODE_ENV=development concurrently -k -n next,electron -c cyan,magenta \"next dev\" \"npm run electron:wait\"",
+    "electron:wait": "wait-on tcp:127.0.0.1:3000 && npm run electron:build && cross-env NODE_ENV=development electron .",
+    "electron:preview": "npm run build && npm run electron:build && electron .",
+    "package": "npm run build && npm run electron:build && electron-builder",
+    "package:win": "npm run build && npm run electron:build && electron-builder --win",
+    "package:mac": "npm run build && npm run electron:build && electron-builder --mac",
+    "package:linux": "npm run build && npm run electron:build && electron-builder --linux",
+    "icons": "node scripts/generate-icons.mjs",
+    "clean": "rimraf out .next dist-electron release"
   },
-  "build": {
-    "appId": "com.appbox.utility",
-    "productName": "AppBox",
-    "files": [
-      "build/**/*",
-      "node_modules/**/*"
-    ],
-    "directories": {
-      "buildResources": "public"
-    },
-    "mac": {
-      "target": "dmg",
-      "icon": "public/logo.png",
-      "category": "public.app-category.utilities"
-    },
-    "win": {
-      "target": "nsis",
-      "icon": "public/logo.png"
-      
-    },
-    "nsis": {
-      "allowToChangeInstallationDirectory": true,
-      "oneClick": false
-    },
-    "linux": {
-      "target": "deb",
-      "icon": "public/logo.png"
-    }
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      "last 1 electron version",
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 electron version",
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "dompurify": "^3.4.13",
+    "jsqr": "^1.4.0",
+    "lucide-react": "^1.30.0",
+    "marked": "^18.0.9",
+    "next": "^16.3.0",
+    "next-themes": "^0.4.6",
+    "qrcode": "^1.5.4",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "tailwind-merge": "^3.6.0",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^26.2.0",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "concurrently": "^10.0.4",
     "cross-env": "^10.1.0",
-    "electron": "^39.2.7",
-    "electron-builder": "^26.0.12",
-    "electronmon": "^2.0.4",
-    "wait-on": "^9.0.3"
+    "electron": "^43.3.0",
+    "electron-builder": "^26.15.3",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.0",
+    "rimraf": "^6.1.3",
+    "sharp": "^0.35.3",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^6.0.3",
+    "vite": "^8.2.1",
+    "wait-on": "^9.1.0"
+  },
+  "build": {
+    "appId": "dev.msyb.appbox",
+    "productName": "AppBox",
+    "copyright": "Copyright © 2026 Muhammad Sheharyar Butt",
+    "asar": true,
+    "files": [
+      "dist-electron/**/*",
+      "out/**/*",
+      "!**/*.map",
+      "!node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "build",
+      "output": "release"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "AppBox",
+      "installerIcon": "build/installerIcon.ico",
+      "uninstallerIcon": "build/uninstallerIcon.ico",
+      "installerHeaderIcon": "build/icon.ico",
+      "uninstallDisplayName": "AppBox ${version}",
+      "artifactName": "${productName}-${version}-${arch}-setup.${ext}"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "icon": "build/icon.png",
+      "category": "public.app-category.utilities",
+      "darkModeSupport": true,
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "dmg": {
+      "title": "AppBox ${version}"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "icon": "build/icon.png",
+      "category": "Utility",
+      "maintainer": "Muhammad Sheharyar Butt <shehariyar@gmail.com>",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    }
   }
 }

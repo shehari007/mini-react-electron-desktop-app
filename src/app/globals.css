@@ -1,0 +1,595 @@
+@import 'tailwindcss';
+
+/* next-themes is configured with attribute="class", so wire Tailwind's dark
+   variant to that class rather than the OS media query. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Theme tokens
+
+   Colors are authored in OKLCH: lightness is perceptually uniform, so a whole
+   accent family can be derived by moving one channel without the hue drifting
+   or a "600" landing visually darker in one hue than another.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/*
+ * `inline` is load-bearing, not cosmetic.
+ *
+ * A plain `@theme` emits `:root { --color-accent: var(--accent) }`, and custom
+ * property substitution happens on the element that declares it — so
+ * --color-accent freezes to the root's indigo and descendants inherit that
+ * literal. Every `data-accent` override further down the tree would be ignored,
+ * and all 36 tools would render indigo.
+ *
+ * `@theme inline` instead emits the utility as `color: var(--accent-text)`, which
+ * resolves per element through normal inheritance, so a subtree can rebrand
+ * itself by setting one attribute.
+ */
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-stack), ui-monospace, 'Cascadia Code', monospace;
+
+  --color-bg: var(--bg);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-card: var(--card);
+  --color-card-hover: var(--card-hover);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-text: var(--accent-text);
+
+  --color-success: oklch(0.63 0.16 155);
+  --color-warning: oklch(0.75 0.16 75);
+  --color-danger: oklch(0.60 0.21 22);
+
+  --color-series-1: var(--series-1);
+  --color-series-2: var(--series-2);
+  --color-series-3: var(--series-3);
+  --color-grid: var(--grid);
+  --color-axis: var(--axis);
+
+  --radius-card: 1rem;
+
+  --shadow-card: 0 1px 2px oklch(0 0 0 / 0.04), 0 4px 16px oklch(0 0 0 / 0.04);
+  --shadow-lift: 0 2px 4px oklch(0 0 0 / 0.05), 0 12px 32px oklch(0 0 0 / 0.10);
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Base surfaces ─────────────────────────────────────────────────────── */
+
+:root {
+  --bg: oklch(0.985 0.003 265);
+  --bg-subtle: oklch(0.965 0.005 265);
+  --card: oklch(1 0 0);
+  --card-hover: oklch(0.99 0.003 265);
+  --border: oklch(0.92 0.006 265);
+  --border-strong: oklch(0.86 0.008 265);
+  --fg: oklch(0.22 0.02 265);
+  --fg-muted: oklch(0.50 0.015 265);
+  --fg-subtle: oklch(0.63 0.012 265);
+
+  /* Chart series colors are deliberately NOT derived from --accent.
+     A series color identifies an entity ("interest", "contributions") and must
+     stay the same wherever it appears, regardless of which tool's accent is
+     active. This 3-slot order is validated for colorblind separation and
+     contrast against both card surfaces; changing it requires re-running the
+     validator, not eyeballing. Light-mode series-3 sits below 3:1 on white, so
+     every chart using it ships a legend and a table view. */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --grid: oklch(0.93 0.005 265);
+  --axis: oklch(0.85 0.008 265);
+
+  color-scheme: light;
+}
+
+.dark {
+  --bg: oklch(0.17 0.014 265);
+  --bg-subtle: oklch(0.21 0.016 265);
+  --card: oklch(0.225 0.017 265);
+  --card-hover: oklch(0.26 0.019 265);
+  --border: oklch(0.30 0.018 265);
+  --border-strong: oklch(0.38 0.020 265);
+  --fg: oklch(0.96 0.004 265);
+  --fg-muted: oklch(0.74 0.012 265);
+  --fg-subtle: oklch(0.60 0.014 265);
+
+  /* The same three hues re-stepped for the dark card surface — a selected dark
+     palette, not an automatic flip. All three clear 3:1 here. */
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --grid: oklch(0.29 0.016 265);
+  --axis: oklch(0.38 0.020 265);
+
+  --shadow-card: 0 1px 2px oklch(0 0 0 / 0.30), 0 4px 16px oklch(0 0 0 / 0.24);
+  --shadow-lift: 0 2px 4px oklch(0 0 0 / 0.35), 0 12px 32px oklch(0 0 0 / 0.40);
+
+  color-scheme: dark;
+}
+
+/* ── Accent families ───────────────────────────────────────────────────────
+   Any subtree can rebrand itself with `data-accent="violet"`. Tool pages set
+   it once on their wrapper, so every button, icon, ring and chart inside picks
+   up that tool's color with no per-component wiring.
+
+   --accent      solid fill (buttons, bars)
+   --accent-fg   text/icon color that sits legibly ON --accent
+   --accent-soft tinted surface (icon tiles, chips, active nav)
+   --accent-text accent-colored text that passes contrast on --card
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root,
+[data-accent='indigo'] {
+  --accent: oklch(0.55 0.21 275);
+  --accent-fg: oklch(0.99 0.005 275);
+  --accent-soft: oklch(0.955 0.028 275);
+  --accent-text: oklch(0.47 0.20 275);
+}
+[data-accent='emerald'] {
+  --accent: oklch(0.62 0.155 158);
+  --accent-fg: oklch(0.99 0.01 158);
+  --accent-soft: oklch(0.955 0.038 158);
+  --accent-text: oklch(0.47 0.13 158);
+}
+[data-accent='amber'] {
+  --accent: oklch(0.73 0.165 68);
+  --accent-fg: oklch(0.22 0.05 68);
+  --accent-soft: oklch(0.96 0.05 78);
+  --accent-text: oklch(0.50 0.13 62);
+}
+[data-accent='violet'] {
+  --accent: oklch(0.58 0.225 300);
+  --accent-fg: oklch(0.99 0.005 300);
+  --accent-soft: oklch(0.955 0.032 300);
+  --accent-text: oklch(0.49 0.215 300);
+}
+[data-accent='sky'] {
+  --accent: oklch(0.62 0.155 235);
+  --accent-fg: oklch(0.99 0.005 235);
+  --accent-soft: oklch(0.955 0.035 235);
+  --accent-text: oklch(0.48 0.145 240);
+}
+[data-accent='rose'] {
+  --accent: oklch(0.62 0.205 14);
+  --accent-fg: oklch(0.99 0.005 14);
+  --accent-soft: oklch(0.955 0.028 14);
+  --accent-text: oklch(0.52 0.205 14);
+}
+[data-accent='fuchsia'] {
+  --accent: oklch(0.62 0.24 330);
+  --accent-fg: oklch(0.99 0.005 330);
+  --accent-soft: oklch(0.955 0.035 330);
+  --accent-text: oklch(0.52 0.23 330);
+}
+[data-accent='teal'] {
+  --accent: oklch(0.61 0.125 188);
+  --accent-fg: oklch(0.99 0.01 188);
+  --accent-soft: oklch(0.955 0.035 188);
+  --accent-text: oklch(0.45 0.105 188);
+}
+[data-accent='lime'] {
+  --accent: oklch(0.71 0.175 130);
+  --accent-fg: oklch(0.22 0.06 130);
+  --accent-soft: oklch(0.955 0.055 130);
+  --accent-text: oklch(0.46 0.135 133);
+}
+[data-accent='cyan'] {
+  --accent: oklch(0.65 0.135 215);
+  --accent-fg: oklch(0.20 0.04 215);
+  --accent-soft: oklch(0.955 0.04 215);
+  --accent-text: oklch(0.47 0.12 218);
+}
+
+/* In dark mode the solid accent is lifted and desaturated slightly (saturated
+   mid-tones vibrate against dark backgrounds), the soft tint becomes a dark
+   tinted surface, and accent text brightens to stay readable. */
+.dark {
+  --accent: oklch(0.68 0.175 275);
+  --accent-fg: oklch(0.16 0.03 275);
+  --accent-soft: oklch(0.30 0.055 275);
+  --accent-text: oklch(0.80 0.13 275);
+}
+.dark [data-accent='indigo'] {
+  --accent: oklch(0.68 0.175 275);
+  --accent-fg: oklch(0.16 0.03 275);
+  --accent-soft: oklch(0.30 0.055 275);
+  --accent-text: oklch(0.80 0.13 275);
+}
+.dark [data-accent='emerald'] {
+  --accent: oklch(0.74 0.155 158);
+  --accent-fg: oklch(0.16 0.04 158);
+  --accent-soft: oklch(0.30 0.055 158);
+  --accent-text: oklch(0.84 0.13 158);
+}
+.dark [data-accent='amber'] {
+  --accent: oklch(0.80 0.155 72);
+  --accent-fg: oklch(0.18 0.05 72);
+  --accent-soft: oklch(0.32 0.06 72);
+  --accent-text: oklch(0.86 0.13 78);
+}
+.dark [data-accent='violet'] {
+  --accent: oklch(0.70 0.185 300);
+  --accent-fg: oklch(0.16 0.03 300);
+  --accent-soft: oklch(0.31 0.06 300);
+  --accent-text: oklch(0.82 0.14 300);
+}
+.dark [data-accent='sky'] {
+  --accent: oklch(0.72 0.145 235);
+  --accent-fg: oklch(0.16 0.03 235);
+  --accent-soft: oklch(0.31 0.055 235);
+  --accent-text: oklch(0.84 0.12 235);
+}
+.dark [data-accent='rose'] {
+  --accent: oklch(0.70 0.175 14);
+  --accent-fg: oklch(0.16 0.03 14);
+  --accent-soft: oklch(0.31 0.06 14);
+  --accent-text: oklch(0.82 0.14 14);
+}
+.dark [data-accent='fuchsia'] {
+  --accent: oklch(0.71 0.20 330);
+  --accent-fg: oklch(0.16 0.03 330);
+  --accent-soft: oklch(0.31 0.065 330);
+  --accent-text: oklch(0.83 0.15 330);
+}
+.dark [data-accent='teal'] {
+  --accent: oklch(0.73 0.115 188);
+  --accent-fg: oklch(0.15 0.03 188);
+  --accent-soft: oklch(0.30 0.05 188);
+  --accent-text: oklch(0.84 0.10 188);
+}
+.dark [data-accent='lime'] {
+  --accent: oklch(0.80 0.165 130);
+  --accent-fg: oklch(0.18 0.05 130);
+  --accent-soft: oklch(0.31 0.065 130);
+  --accent-text: oklch(0.87 0.14 130);
+}
+.dark [data-accent='cyan'] {
+  --accent: oklch(0.76 0.125 215);
+  --accent-fg: oklch(0.16 0.03 215);
+  --accent-soft: oklch(0.30 0.055 215);
+  --accent-text: oklch(0.85 0.11 215);
+}
+
+/* ── Base layer ────────────────────────────────────────────────────────── */
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overscroll-behavior-y: none;
+  }
+
+  /* Visible focus, but only for keyboard users. */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Tabular figures everywhere a number updates in place, so digits don't
+     jitter as the value changes. */
+  .tabular,
+  input[type='number'] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background-color: var(--accent-soft);
+    color: var(--accent-text);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--fg-subtle);
+    background-clip: content-box;
+  }
+
+  /* Firefox lacks ::-webkit-scrollbar; give it the thin native treatment. */
+  @supports (scrollbar-width: thin) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-strong) transparent;
+    }
+  }
+}
+
+/* ── Utilities ─────────────────────────────────────────────────────────── */
+
+@utility card {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+/* Text filled with the accent gradient — used for the wordmark and hero
+   headings. Falls back to a solid accent color where clipping is unsupported. */
+@utility text-gradient {
+  background-image: linear-gradient(
+    135deg,
+    var(--accent) 0%,
+    color-mix(in oklch, var(--accent), oklch(0.65 0.24 330) 55%) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* The soft radial wash behind hero sections. */
+@utility accent-glow {
+  background-image:
+    radial-gradient(60% 80% at 12% 0%, color-mix(in oklch, var(--accent), transparent 82%) 0%, transparent 60%),
+    radial-gradient(50% 70% at 92% 12%, color-mix(in oklch, var(--accent), transparent 88%) 0%, transparent 62%);
+}
+
+/* Drag region for the frameless Electron window. Web builds never render the
+   title bar that uses this, so it costs nothing there. */
+@utility drag-region {
+  -webkit-app-region: drag;
+}
+@utility no-drag {
+  -webkit-app-region: no-drag;
+}
+
+/* ── Rendered markdown ─────────────────────────────────────────────────────
+   Tailwind's preflight strips heading sizes, list markers and margins, so the
+   markdown preview needs them put back. Scoped to .markdown-body so it only
+   ever affects rendered user content, never the app's own UI.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.markdown-body > *:first-child {
+  margin-top: 0;
+}
+.markdown-body > *:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4 {
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--fg);
+  margin: 1.5em 0 0.5em;
+  scroll-margin-top: 4rem;
+}
+.markdown-body h1 {
+  font-size: 1.75em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--border);
+}
+.markdown-body h2 {
+  font-size: 1.35em;
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid var(--border);
+}
+.markdown-body h3 {
+  font-size: 1.15em;
+}
+.markdown-body h4 {
+  font-size: 1em;
+}
+
+.markdown-body p,
+.markdown-body blockquote,
+.markdown-body ul,
+.markdown-body ol,
+.markdown-body pre,
+.markdown-body table {
+  margin: 0.85em 0;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 1.6em;
+}
+.markdown-body ul {
+  list-style: disc;
+}
+.markdown-body ol {
+  list-style: decimal;
+}
+.markdown-body li {
+  margin: 0.25em 0;
+}
+.markdown-body li::marker {
+  color: var(--fg-subtle);
+}
+/* GFM task lists render a checkbox and no marker. */
+.markdown-body li:has(input[type='checkbox']) {
+  list-style: none;
+  margin-left: -1.4em;
+}
+.markdown-body input[type='checkbox'] {
+  margin-right: 0.5em;
+  accent-color: var(--accent);
+}
+
+.markdown-body a {
+  color: var(--accent-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.markdown-body strong {
+  font-weight: 650;
+  color: var(--fg);
+}
+.markdown-body em {
+  font-style: italic;
+}
+.markdown-body del {
+  text-decoration: line-through;
+  color: var(--fg-subtle);
+}
+
+.markdown-body code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0.12em 0.35em;
+}
+.markdown-body pre {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+}
+.markdown-body pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.markdown-body blockquote {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 0.5rem 0.5rem 0;
+  padding: 0.6em 1em;
+  color: var(--fg-muted);
+}
+.markdown-body blockquote > *:first-child {
+  margin-top: 0;
+}
+.markdown-body blockquote > *:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+  font-size: 0.9em;
+}
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid var(--border);
+  padding: 0.45em 0.7em;
+  text-align: left;
+}
+.markdown-body th {
+  background: var(--bg-subtle);
+  font-weight: 600;
+}
+
+.markdown-body hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 1.75em 0;
+}
+
+.markdown-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+/* ── Motion ────────────────────────────────────────────────────────────── */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes shimmer {
+  to {
+    background-position: 200% 0;
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.35s var(--ease-out-soft) both;
+}
+.animate-pop-in {
+  animation: pop-in 0.18s var(--ease-out-soft) both;
+}
+
+/* Respect the OS reduced-motion setting: kill transforms and animation, keep
+   opacity so state changes are still perceivable. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Print ─────────────────────────────────────────────────────────────── */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+    color: #000;
+  }
+}
