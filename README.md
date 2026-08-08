@@ -179,8 +179,13 @@ Installers land in `release/`.
 
 ## Deploying the web build
 
-The repo is ready for Vercel with no configuration — `vercel.json` sets the build command,
-output directory, cache headers and a Content-Security-Policy matching the desktop one.
+Push it and Vercel handles the rest. Its Next.js preset understands `output: 'export'`
+on its own, so `vercel.json` only adds what the framework does not: cache headers and a
+Content-Security-Policy matching the desktop one.
+
+Do not set `outputDirectory` to `out` there. It reads as "look for the Next build in
+`out/`", and the deploy fails with a missing `routes-manifest.json` — that file lives in
+`.next/`, which is exactly where the preset already looks.
 
 Any static host works too: `npm run build`, then serve `out/`.
 
